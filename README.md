@@ -2,6 +2,8 @@
 
 AI prompt enhancement toolkit that turns vague prompts into structured, high-quality instructions for better results from ChatGPT, Claude, Gemini, and other AI chatbots.
 
+<img width="1878" height="701" alt="image" src="https://github.com/user-attachments/assets/d31f9ccc-8bb4-42af-b5c3-6a5151626832" />
+
 ## The Problem
 
 Most people type quick, unstructured prompts into AI chatbots and get generic, shallow responses. Prompt engineering makes a huge difference in output quality — but writing detailed, well-structured prompts every time is tedious and requires expertise most users don't have.
