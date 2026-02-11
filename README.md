@@ -1,91 +1,99 @@
 # 🔥 Prompt Plugin
 
-> **Stop writing bad prompts.** Prompt Plugin is an open-source AI prompt enhancement toolkit that automatically transforms your vague, incomplete prompts into structured, high-quality instructions — so ChatGPT, Claude, Gemini, and other AI chatbots give you dramatically better results.
+AI prompt enhancement toolkit that turns vague prompts into structured, high-quality instructions for better results from ChatGPT, Claude, Gemini, and other AI chatbots.
 
-Whether you're coding, writing, analyzing data, or brainstorming — just type your rough idea and Prompt Plugin handles the rest: it detects the task type, applies expert role framing, injects structure and context, and polishes tone. Available as a **Web UI**, **REST API**, **CLI tool**, and **Python library**.
+## The Problem
 
----
+Most people type quick, unstructured prompts into AI chatbots and get generic, shallow responses. Prompt engineering makes a huge difference in output quality — but writing detailed, well-structured prompts every time is tedious and requires expertise most users don't have.
+
+## The Solution
+
+Prompt Plugin sits between you and any AI chatbot. You type your rough idea, and it automatically:
+
+1. **Detects what you're trying to do** — coding, writing, analysis, debugging, brainstorming, etc.
+2. **Adds expert role framing** — e.g. "You are an expert software engineer" for coding tasks
+3. **Applies tone styling** — matches your chosen tone (professional, casual, technical, etc.)
+4. **Boosts specificity** — if your prompt is too vague, it adds detail and example requests
+5. **Injects structure** — asks the AI to organize its response (sections, bullet points, code + explanation)
+6. **Adds quality guardrails** — instructs the AI to prioritize accuracy, flag uncertainty, and use examples
+
+The result is a prompt that consistently produces better, more useful AI responses — without you having to think about prompt engineering.
+
+## What It Does
+
+```
+❌  "sort a list in python"
+
+✅  "You are an expert software engineer. Write Python code that sorts a list.
+    Follow best practices, include comments, handle edge cases, and provide
+    example usage."
+```
+
+```
+❌  "explain docker"
+
+✅  "You are a patient teacher who explains complex topics clearly.
+    Explain the concept of Docker. Include a simple overview, a real-world
+    analogy, key terminology, a practical example, and common misconceptions.
+    Be warm, approachable, and encouraging."
+```
+
+## Who It's For
+
+- **Developers** who use AI for coding help and want better code output
+- **Writers & marketers** who need AI-generated content that actually sounds good
+- **Students & researchers** who want clear, structured explanations
+- **Teams** who want a shared set of prompt templates and consistent AI interactions
+- **Anyone** who uses ChatGPT, Claude, or Gemini daily and wants better results with less effort
+
+## How It Works
+
+Prompt Plugin uses a rule-based enhancement pipeline (no API keys needed, no external AI calls). Everything runs locally:
+
+- **Category Detection** — keyword analysis across 9 task categories to classify your prompt
+- **Template Engine** — 12 pre-built templates with variable substitution for common tasks
+- **Enhancement Pipeline** — 6-stage processing chain: role framing → tone → specificity → structure → context → guardrails
+- **History Manager** — local JSON-backed storage for saving, searching, and starring past prompts
+
+Available as four interfaces:
+- **Web UI** — browser-based dashboard with live enhancement
+- **REST API** — FastAPI with Swagger docs, integrate into any app
+- **CLI** — terminal tool with rich formatting, clipboard copy
+- **Python library** — import and use directly in your code
 
 ## Features
 
-| Feature | Description |
-|---------|-------------|
-| **Auto-Enhance** | Rewrites vague prompts into structured, effective ones using role framing, specificity boosts, and quality guardrails |
-| **12 Prompt Templates** | Pre-built templates for coding, writing, analysis, brainstorming, debugging, summarization, translation, and more |
-| **Tone/Style Selector** | Choose from 6 tones: Professional, Casual, Technical, Creative, Academic, Friendly |
-| **Context Injection** | Automatically adds relevant context and system instructions to your prompts |
-| **Prompt History** | Save, search, star, and reuse past prompts with persistent local storage |
-| **Auto Category Detection** | Detects task type (coding, writing, analysis, etc.) from your prompt text |
+- **Auto-Enhance** — rewrites vague prompts with role framing, specificity boosts, and guardrails
+- **12 Templates** — coding, writing, analysis, brainstorming, debugging, summarization, translation, explanation
+- **6 Tones** — professional, casual, technical, creative, academic, friendly
+- **Context Injection** — append extra context and system instructions
+- **Prompt History** — save, search, star, and reuse past prompts
+- **Auto Category Detection** — detects coding, writing, analysis, etc. from prompt text
 
-## Quick Start
-
-### Install
+## Install
 
 ```bash
-cd prompt_plugin
 pip install -e ".[dev]"
 ```
 
-### CLI Usage
+## Usage
 
+**CLI:**
 ```bash
-# Enhance a prompt
 prompt-plugin enhance "write a python function to sort a list"
-
-# With tone and context
 prompt-plugin enhance "explain docker" --tone friendly --context "audience is beginners"
-
-# Copy result to clipboard (macOS)
-prompt-plugin enhance "compare React vs Vue" --copy
-
-# List templates
 prompt-plugin templates
-
-# Render a template
-prompt-plugin render code-write '{"language": "Python", "task_description": "binary search"}'
-
-# View history
 prompt-plugin history
-prompt-plugin history --starred
-prompt-plugin history --search "python"
-
-# Start the web server
-prompt-plugin serve
 ```
 
-### Web API & UI
-
+**Web UI + API:**
 ```bash
-# Start the server
 prompt-plugin serve
-
-# Or directly with uvicorn
-uvicorn prompt_plugin.api:app --reload
+# Web UI → http://127.0.0.1:8000
+# API docs → http://127.0.0.1:8000/docs
 ```
 
-Then open:
-- **Web UI**: http://127.0.0.1:8000
-- **API Docs (Swagger)**: http://127.0.0.1:8000/docs
-
-### API Examples
-
-```bash
-# Enhance a prompt
-curl -X POST http://127.0.0.1:8000/api/enhance \
-  -H "Content-Type: application/json" \
-  -d '{"raw_prompt": "fix my code", "tone": "technical"}'
-
-# List templates
-curl http://127.0.0.1:8000/api/templates
-
-# Render a template
-curl -X POST http://127.0.0.1:8000/api/templates/code-write/render \
-  -H "Content-Type: application/json" \
-  -d '{"language": "Go", "task_description": "HTTP server"}'
-```
-
-### Python Library
-
+**Python:**
 ```python
 from prompt_plugin.engine import PromptEngine
 from prompt_plugin.models import PromptRequest, Tone
@@ -94,99 +102,24 @@ engine = PromptEngine()
 result = engine.process(PromptRequest(
     raw_prompt="write a python function to sort a list",
     tone=Tone.technical,
-    context="Using Python 3.12",
 ))
-
-print(result.enhanced)       # The improved prompt
-print(result.category)       # TaskCategory.coding
-print(result.techniques_applied)  # ['role_framing', 'tone_styling', ...]
+print(result.enhanced)
 ```
 
-## How Enhancement Works
+## Deploy
 
-The engine applies these techniques in order:
+**Render (free):** Push to GitHub → [render.com](https://render.com) → New Web Service → connect repo → Deploy.
 
-1. **Role Framing** — Prepends an expert persona matching the detected task category
-2. **Tone Styling** — Adds tone instructions (professional, casual, etc.)
-3. **Specificity Boost** — If the prompt is too short/vague, adds detail requests
-4. **Structure Guidance** — Requests organized output format based on category
-5. **Context Injection** — Appends any extra context the user provides
-6. **Quality Guardrails** — Adds instructions for accuracy and examples
-
-## Templates
-
-| Template | Category | Variables |
-|----------|----------|-----------|
-| Write Code | coding | `language`, `task_description` |
-| Code Review | coding | `language`, `code` |
-| Debug Code | debugging | `language`, `code`, `error_message` |
-| Write Article | writing | `topic`, `audience`, `length`, `tone` |
-| Compose Email | writing | `purpose`, `recipient`, `key_points`, `tone` |
-| Analyze Data | analysis | `data`, `focus_area` |
-| Compare Options | analysis | `options`, `criteria` |
-| Brainstorm Ideas | brainstorming | `topic`, `constraints` |
-| Summarize Text | summarization | `content` |
-| Explain Concept | explanation | `concept`, `level` |
-| ELI5 | explanation | `concept` |
-| Translate Text | translation | `source_language`, `target_language`, `text` |
-
-## Running Tests
-
-```bash
-pip install -e ".[dev]"
-pytest -v
-```
-
-## Project Structure
-
-```
-prompt_plugin/
-├── prompt_plugin/
-│   ├── __init__.py         # Package metadata
-│   ├── models.py           # Pydantic data models
-│   ├── templates.py        # 12 built-in prompt templates
-│   ├── enhancer.py         # Auto-enhance engine + category detection
-│   ├── history.py          # Persistent prompt history manager
-│   ├── engine.py           # Main orchestrator
-│   ├── api.py              # FastAPI web API
-│   ├── cli.py              # Typer CLI interface
-│   └── static/
-│       └── index.html      # Web UI (single-page app)
-├── tests/
-│   ├── test_core.py        # Core engine tests
-│   └── test_api.py         # API endpoint tests
-├── pyproject.toml           # Project config & dependencies
-├── requirements.txt         # Pinned dependencies for deployment
-├── Dockerfile               # Container build
-├── render.yaml              # Render.com deploy config
-└── README.md
-```
-
-## Deploy to Render (Free)
-
-1. Push this repo to GitHub
-2. Go to [render.com](https://render.com) → **New → Web Service**
-3. Connect your GitHub repo
-4. Render auto-detects `render.yaml` — just click **Deploy**
-
-Or use the **Deploy to Render** button:
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
-
-### Manual deploy via Render Dashboard
-
-| Setting | Value |
-|---------|-------|
-| **Runtime** | Python |
-| **Build Command** | `pip install -r requirements.txt` |
-| **Start Command** | `uvicorn prompt_plugin.api:app --host 0.0.0.0 --port $PORT` |
-| **Plan** | Free |
-
-### Docker (deploy anywhere)
-
+**Docker:**
 ```bash
 docker build -t prompt-plugin .
 docker run -p 8000:8000 prompt-plugin
+```
+
+## Tests
+
+```bash
+pytest -v
 ```
 
 ## License
