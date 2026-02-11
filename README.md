@@ -156,7 +156,37 @@ prompt_plugin/
 │   ├── test_core.py        # Core engine tests
 │   └── test_api.py         # API endpoint tests
 ├── pyproject.toml           # Project config & dependencies
+├── requirements.txt         # Pinned dependencies for deployment
+├── Dockerfile               # Container build
+├── render.yaml              # Render.com deploy config
 └── README.md
+```
+
+## Deploy to Render (Free)
+
+1. Push this repo to GitHub
+2. Go to [render.com](https://render.com) → **New → Web Service**
+3. Connect your GitHub repo
+4. Render auto-detects `render.yaml` — just click **Deploy**
+
+Or use the **Deploy to Render** button:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+### Manual deploy via Render Dashboard
+
+| Setting | Value |
+|---------|-------|
+| **Runtime** | Python |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `uvicorn prompt_plugin.api:app --host 0.0.0.0 --port $PORT` |
+| **Plan** | Free |
+
+### Docker (deploy anywhere)
+
+```bash
+docker build -t prompt-plugin .
+docker run -p 8000:8000 prompt-plugin
 ```
 
 ## License
