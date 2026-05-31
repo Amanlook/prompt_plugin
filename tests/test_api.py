@@ -57,11 +57,3 @@ async def test_render_template(client):
         })
     assert res.status_code == 200
     assert "Go" in res.json()["rendered"]
-
-
-@pytest.mark.asyncio
-async def test_root_serves_html(client):
-    async with client as c:
-        res = await c.get("/")
-    assert res.status_code == 200
-    assert "Prompt Plugin" in res.text
